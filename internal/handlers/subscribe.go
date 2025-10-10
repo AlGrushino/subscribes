@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -19,7 +18,7 @@ type CreateSubscribeRequest struct {
 }
 
 func (h *Handler) CreateSubscription(c *gin.Context) {
-	fmt.Println("hello")
+	// fmt.Println("hello")
 	var req CreateSubscribeRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

@@ -4,17 +4,16 @@ import (
 	"fmt"
 
 	"github.com/AlGrushino/subscribes/internal/service"
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
-	service service.Service
+	service *service.Service
 }
 
 func NewHandler(service *service.Service) *Handler {
 	return &Handler{
-		service: *service,
+		service: service,
 	}
 }
 
@@ -27,17 +26,6 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		c.Next()
 	})
 	// отладка
-
-	router.Use(cors.New(cors.Config{
-		AllowAllOrigins: true,
-		// AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowMethods:  []string{"GET", "POST", "PUT", "DELETE"},
-		AllowHeaders:  []string{"Origin", "Authorization", "Content-Type"},
-		ExposeHeaders: []string{"Content-Length"},
-		// на случай, если будет авторизация
-		// AllowCredentials: true,
-		// MaxAge:           12 * 3600,
-	}))
 
 	api := router.Group("/api")
 	{

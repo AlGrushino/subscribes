@@ -5,12 +5,12 @@ import (
 	"github.com/AlGrushino/subscribes/internal/repository/models"
 )
 
-type Service struct {
-	Subscribe Subscribe
-}
-
 type Subscribe interface {
 	Create(subscription *models.Subscribe) (int, error)
+}
+
+type Service struct {
+	Subscribe
 }
 
 func NewService(repository *repository.Repository) *Service {
