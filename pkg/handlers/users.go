@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/AlGrushino/subscribes/pkg/models"
 	"github.com/google/uuid"
@@ -35,4 +36,18 @@ func GetUserSubscribes(user_id uuid.UUID, db *sql.DB) ([]models.Subscribe, error
 	}
 
 	return subscribes, nil
+}
+
+func GetFirstUserId(db *sql.DB) (uuid.UUID, error) {
+	var id uuid.UUID
+
+	row := db.QueryRow("SELECT id FROM users LIMIT 1")
+	err := row.Scan(&id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return id, fmt.Errorf("no users")
+		}
+		return id, err
+	}
+	return id, nil
 }

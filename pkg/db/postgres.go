@@ -28,15 +28,6 @@ func GetConfig() (*Config, error) {
 }
 
 func DBInit(cfg *Config) (db *sql.DB, err error) {
-	// connStr := fmt.Sprintf(
-	// 	"postgres://%s:%s@%s:%s/%s",
-	// 	cfg.User,
-	// 	cfg.Password,
-	// 	cfg.Host,
-	// 	cfg.Port,
-	// 	cfg.DBname,
-	// )
-
 	connStr := GetConnStr(cfg)
 
 	db, err = sql.Open("postgres", connStr)
