@@ -2,45 +2,44 @@ package db
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
+	"os"
 
 	_ "github.com/lib/pq"
 )
 
-func MakeQuery() ([]Person, error) {
-	res := []Person{}
-	connStr := "postgres://postgres:postgres@localhost:5432/subscribe_project"
-	db, err := sql.Open("postgres", connStr)
-	if err != nil {
-		return nil, errors.New("бд не открылась")
-	}
-	defer db.Close()
-
-	age := 21
-	rows, err := db.Query("SELECT username, age FROM users WHERE age = $1", age)
-
-	if err != nil {
-		return nil, fmt.Errorf("ошибка запроса: %v", err)
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var person Person
-		err := rows.Scan(&person.Name, &person.Age)
-		if err != nil {
-			return nil, errors.New("не удалось отсканировать персону")
-		}
-		res = append(res, person)
-	}
-
-	if err = rows.Err(); err != nil {
-		return nil, errors.New("произошла какая-то дич")
-	}
-	return res, nil
+type Config struct {
+	Host     string
+	User     string
+	Password string
+	DBname   string
+	Port     string
 }
 
-type Person struct {
-	Name string
-	Age  int
+func GetConfig() (*Config, error) {
+	cfg := Config{
+		User:     os.Getenv("DB_USER"),
+		Password: os.Getenv("DB_PASSWORD"),
+		Host:     os.Getenv("DB_HOST"),
+		DBname:   os.Getenv("DB_NAME"),
+		Port:     os.Getenv("DB_PORT"),
+	}
+	return &cfg, nil
+}
+
+func DBInit(cfg *Config) (db *sql.DB, err error) {
+	connStr := fmt.Sprintf(
+		"postgres://%s:%s@%s:%s/%s",
+		cfg.User,
+		cfg.Password,
+		cfg.Host,
+		cfg.Port,
+		cfg.DBname,
+	)
+
+	db, err = sql.Open("postgres", connStr)
+	if err != nil {
+		return nil, err
+	}
+	return db, nil
 }

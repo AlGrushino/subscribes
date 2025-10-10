@@ -34,3 +34,4 @@ go.work.sum
 # project
 subscribes
 temp.txt
+.env
