@@ -5,6 +5,10 @@ import (
 
 	"github.com/AlGrushino/subscribes/pkg/db"
 	"github.com/AlGrushino/subscribes/pkg/handlers"
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres" // добавьте этот импорт
+	_ "github.com/golang-migrate/migrate/v4/source/file"       // добавьте этот импорт
+
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 )
@@ -22,20 +26,34 @@ func main() {
 		return
 	}
 
-	db, err := db.DBInit(cfg)
+	database, err := db.DBInit(cfg)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	defer db.Close()
+	defer database.Close()
 
-	userID, err := uuid.Parse("c02dadb7-8f30-451f-ad81-ea17f127d33b")
+	m, err := migrate.New(
+		"file://../migrations",
+		db.GetConnStr(cfg))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer m.Close()
+
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+		fmt.Println(err)
+		return
+	}
+
+	userID, err := uuid.Parse("fcd30c1d-fa2b-4d41-9512-c27c245494ec")
 	if err != nil {
 		fmt.Println(err)
 		return
 		// log.Fatal("Invalid UUID:", err)
 	}
-	subscribes, err := handlers.GetUserSubscribes(userID, db)
+	subscribes, err := handlers.GetUserSubscribes(userID, database)
 	if err != nil {
 		fmt.Println(err)
 		return
