@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/AlGrushino/subscribes/pkg/models"
+	"github.com/AlGrushino/subscribes/internal/repository/models"
 	"github.com/google/uuid"
 )
 

@@ -36,3 +36,5 @@ subscribes
 temp.txt
 .env
 bases.sql
+temp.json
+layers.txt
