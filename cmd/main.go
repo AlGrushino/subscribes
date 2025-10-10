@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 
+	"github.com/AlGrushino/subscribes/pkg/db"
 	"github.com/AlGrushino/subscribes/pkg/handlers"
+	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 )
 
@@ -14,14 +16,41 @@ func main() {
 		return
 	}
 
-	users, err := handlers.GetUserByAge(21)
+	cfg, err := db.GetConfig()
 	if err != nil {
-		problem := fmt.Errorf("ошибка запроса: %v", err)
-		fmt.Println(problem)
+		fmt.Println(err)
 		return
 	}
 
-	for _, v := range users {
-		fmt.Printf("имя: %s\nвозраст: %d\n", v.Name, v.Age)
+	db, err := db.DBInit(cfg)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer db.Close()
+
+	userID, err := uuid.Parse("c02dadb7-8f30-451f-ad81-ea17f127d33b")
+	if err != nil {
+		fmt.Println(err)
+		return
+		// log.Fatal("Invalid UUID:", err)
+	}
+	subscribes, err := handlers.GetUserSubscribes(userID, db)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Printf("Найдено %d подписок для пользователя %s:\n", len(subscribes), userID)
+	for _, sub := range subscribes {
+		endDateStr := "бессрочная"
+		if sub.EndDate != nil {
+			endDateStr = sub.EndDate.Format("2006-01-02")
+		}
+		fmt.Printf("- %s: %d руб. (с %s по %s)\n",
+			sub.ServiceName,
+			sub.Price,
+			sub.StartDate.Format("2006-01-02"),
+			endDateStr)
 	}
 }

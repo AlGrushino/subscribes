@@ -1,41 +1,38 @@
 package handlers
 
 import (
-	"github.com/AlGrushino/subscribes/pkg/db"
+	"database/sql"
+
 	"github.com/AlGrushino/subscribes/pkg/models"
+	"github.com/google/uuid"
 )
 
-func GetUserByAge(age int) ([]models.Person, error) {
-	persons := []models.Person{}
+func GetUserSubscribes(user_id uuid.UUID, db *sql.DB) ([]models.Subscribe, error) {
+	subscribes := []models.Subscribe{}
 
-	cfg, err := db.GetConfig()
-	if err != nil {
-		return nil, err
-	}
-
-	db, err := db.DBInit(cfg)
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-
-	rows, err := db.Query("SELECT username, age FROM users WHERE age = $1", age)
+	rows, err := db.Query(
+		"SELECT id, service_name, price, start_date, end_date FROM subscribes WHERE user_id = $1",
+		user_id)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-		var person models.Person
-		err := rows.Scan(&person.Name, &person.Age)
+		var subscribe models.Subscribe
+		err := rows.Scan(&subscribe.Id,
+			&subscribe.ServiceName,
+			&subscribe.Price,
+			&subscribe.StartDate,
+			&subscribe.EndDate)
 		if err != nil {
 			return nil, err
 		}
-		persons = append(persons, person)
+		subscribes = append(subscribes, subscribe)
 	}
-	if err = rows.Err(); err != nil {
+	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 
-	return persons, nil
+	return subscribes, nil
 }

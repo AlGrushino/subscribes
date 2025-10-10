@@ -7,23 +7,17 @@ import (
 )
 
 type User struct {
-	Id       int
+	Id       uuid.UUID
 	Name     string
 	Password string
+	Email    string
 }
 
 type Subscribe struct {
 	Id          int
 	ServiceName string
 	Price       int
-	UserId      int
 	UserUUID    uuid.UUID
 	StartDate   time.Time
-	EndDate     time.Time
-}
-
-// удалить перед релизом
-type Person struct {
-	Name string
-	Age  int
+	EndDate     *time.Time
 }
