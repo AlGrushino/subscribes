@@ -31,3 +31,7 @@ func (s *subscribeService) GetSubscriptionByID(subscriptionID int) (*models.Subs
 func (s *subscribeService) GetUsersSubscriptions(userID uuid.UUID) ([]models.Subscribe, error) {
 	return s.repository.GetUsersSubscriptions(userID)
 }
+
+func (s *subscribeService) UpdateSubscription(subscriptionID, price int) (int, error) {
+	return s.repository.UpdateSubscription(subscriptionID, price)
+}

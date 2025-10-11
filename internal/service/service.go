@@ -11,6 +11,7 @@ type Subscribe interface {
 	GetAllByServiceName(serviceName string) ([]models.Subscribe, error)
 	GetSubscriptionByID(subscriptionID int) (*models.Subscribe, error)
 	GetUsersSubscriptions(userID uuid.UUID) ([]models.Subscribe, error)
+	UpdateSubscription(subscriptionID, price int) (int, error)
 }
 
 type Service struct {

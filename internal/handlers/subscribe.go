@@ -153,3 +153,48 @@ func (h *Handler) GetUsersSubscriptions(c *gin.Context) {
 		"count":         len(subscriptions),
 	})
 }
+
+func (h *Handler) UpdateSubscription(c *gin.Context) {
+	subscriptionID := c.Param("subscriptionID")
+	price := c.Param("price")
+
+	if subscriptionID == "" {
+		c.JSON(
+			http.StatusBadRequest,
+			gin.H{"error": "subscriptionID parameter is required"})
+		return
+	}
+	if price == "" {
+		c.JSON(
+			http.StatusBadRequest,
+			gin.H{"error": "price parameter is required"})
+		return
+	}
+
+	subscriptionIDInt, err := strconv.Atoi(subscriptionID)
+	if err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			gin.H{"error": "failed to convert subscriptionID"})
+		return
+	}
+
+	priceInt, err := strconv.Atoi(price)
+	if err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			gin.H{"error": "failed to convert price"})
+		return
+	}
+
+	rowsAffected, err := h.service.UpdateSubscription(subscriptionIDInt, priceInt)
+	if err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			gin.H{"error": "failed to udpate subscription"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"rowsAffected": rowsAffected})
+}

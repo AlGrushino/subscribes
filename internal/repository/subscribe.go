@@ -142,3 +142,18 @@ func (s *subscribeRepository) GetUsersSubscriptions(userID uuid.UUID) ([]models.
 
 	return subscriptionList, nil
 }
+
+func (s *subscribeRepository) UpdateSubscription(subscriptionID, price int) (int, error) {
+	sqlStatement := `UPDATE subscribes SET price = $1 WHERE id = $2;`
+	res, err := s.db.Exec(sqlStatement, price, subscriptionID)
+	if err != nil {
+		return 0, err
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return 0, err
+	}
+
+	return int(rowsAffected), nil
+}
