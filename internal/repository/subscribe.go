@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/AlGrushino/subscribes/internal/repository/models"
 )
@@ -82,4 +83,27 @@ func (s *subscribeRepository) GetAllByServiceName(serviceName string) ([]models.
 	}
 
 	return subscribeList, nil
+}
+
+func (s *subscribeRepository) GetSubscriptionByID(subscriptionID int) (*models.Subscribe, error) {
+	var subscription models.Subscribe
+
+	err := s.db.QueryRow(
+		"SELECT id, service_name, price, user_id, start_date, end_date FROM subscribes WHERE id = $1",
+		subscriptionID,
+	).Scan(
+		&subscription.Id,
+		&subscription.ServiceName,
+		&subscription.Price,
+		&subscription.UserUUID,
+		&subscription.StartDate,
+		&subscription.EndDate,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return &subscription, fmt.Errorf("subscription with id %d not found", subscriptionID)
+		}
+		return &subscription, err
+	}
+	return &subscription, nil
 }

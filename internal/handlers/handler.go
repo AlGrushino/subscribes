@@ -30,7 +30,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		subscribes := api.Group("/subscribes")
 		{
 			subscribes.POST("", h.CreateSubscription)
-			subscribes.GET("/:serviceName", h.GetAllSubscriptionsByServiceName)
+			subscribes.GET("/service/:serviceName", h.GetAllSubscriptionsByServiceName)
+			subscribes.GET("/:serviceID", h.GetSubscriptionByID)
 		}
 	}
 	return router

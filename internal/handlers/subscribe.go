@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/AlGrushino/subscribes/internal/repository/models"
@@ -70,13 +71,17 @@ func (h *Handler) CreateSubscription(c *gin.Context) {
 func (h *Handler) GetAllSubscriptionsByServiceName(c *gin.Context) {
 	serviceName := c.Param("serviceName")
 	if serviceName == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "service_name parameter is required"})
+		c.JSON(
+			http.StatusBadRequest,
+			gin.H{"error": "service_name parameter is required"})
 		return
 	}
 
 	subscriptionList, err := h.service.Subscribe.GetAllByServiceName(serviceName)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get subscriptions"})
+		c.JSON(
+			http.StatusInternalServerError,
+			gin.H{"error": "Failed to get subscriptions"})
 		return
 	}
 
@@ -84,5 +89,35 @@ func (h *Handler) GetAllSubscriptionsByServiceName(c *gin.Context) {
 		"service_name":  serviceName,
 		"subscriptions": subscriptionList,
 		"count":         len(subscriptionList),
+	})
+}
+
+func (h *Handler) GetSubscriptionByID(c *gin.Context) {
+	serviceID := c.Param("serviceID")
+	if serviceID == "" {
+		c.JSON(
+			http.StatusBadRequest,
+			gin.H{"error": "service_id parameter is required"})
+		return
+	}
+
+	serviceIDInt, err := strconv.Atoi(serviceID)
+	if err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			gin.H{"error": "failed to convert"})
+		return
+	}
+
+	subscription, err := h.service.Subscribe.GetSubscriptionByID(serviceIDInt)
+	if err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			gin.H{"error": "failed to get subscription"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"subscription": *subscription,
 	})
 }

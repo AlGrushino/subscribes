@@ -22,3 +22,7 @@ func (s *subscribeService) Create(subscription *models.Subscribe) (int, error) {
 func (s *subscribeService) GetAllByServiceName(serviceName string) ([]models.Subscribe, error) {
 	return s.repository.GetAllByServiceName(serviceName)
 }
+
+func (s *subscribeService) GetSubscriptionByID(subscriptionID int) (*models.Subscribe, error) {
+	return s.repository.GetSubscriptionByID(subscriptionID)
+}
