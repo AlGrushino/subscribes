@@ -7,6 +7,7 @@ import (
 
 type Subscribe interface {
 	Create(subscription *models.Subscribe) (int, error)
+	GetAllByServiceName(serviceName string) ([]models.Subscribe, error)
 }
 
 type Service struct {

@@ -18,3 +18,7 @@ func newSubscribeService(repository repository.Subscribe) *subscribeService {
 func (s *subscribeService) Create(subscription *models.Subscribe) (int, error) {
 	return s.repository.Create(subscription)
 }
+
+func (s *subscribeService) GetAllByServiceName(serviceName string) ([]models.Subscribe, error) {
+	return s.repository.GetAllByServiceName(serviceName)
+}

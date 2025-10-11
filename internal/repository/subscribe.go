@@ -44,8 +44,42 @@ func (s *subscribeRepository) Create(subscription *models.Subscribe) (int, error
 	}
 
 	if err := tx.Commit(); err != nil {
-		return 0, nil
+		return 0, err
 	}
 
 	return subID, nil
+}
+
+func (s *subscribeRepository) GetAllByServiceName(serviceName string) ([]models.Subscribe, error) {
+	var subscribeList []models.Subscribe
+
+	rows, err := s.db.Query(
+		"SELECT id, service_name, price, user_id, start_date, end_date FROM subscribes WHERE service_name = $1",
+		serviceName,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var subscribe models.Subscribe
+		err := rows.Scan(
+			&subscribe.Id,
+			&subscribe.ServiceName,
+			&subscribe.Price,
+			&subscribe.UserUUID,
+			&subscribe.StartDate,
+			&subscribe.EndDate,
+		)
+		if err != nil {
+			return nil, err
+		}
+		subscribeList = append(subscribeList, subscribe)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return subscribeList, nil
 }

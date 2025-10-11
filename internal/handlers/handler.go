@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"fmt"
-
 	"github.com/AlGrushino/subscribes/internal/service"
 	"github.com/gin-gonic/gin"
 )
@@ -21,10 +19,10 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.Default()
 
 	// отладка
-	router.Use(func(c *gin.Context) {
-		fmt.Printf("Incoming request: %s %s\n", c.Request.Method, c.Request.URL.Path)
-		c.Next()
-	})
+	// router.Use(func(c *gin.Context) {
+	// 	fmt.Printf("Incoming request: %s %s\n", c.Request.Method, c.Request.URL.Path)
+	// 	c.Next()
+	// })
 	// отладка
 
 	api := router.Group("/api")
@@ -32,6 +30,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		subscribes := api.Group("/subscribes")
 		{
 			subscribes.POST("", h.CreateSubscription)
+			subscribes.GET("/:serviceName", h.GetAllSubscriptionsByServiceName)
 		}
 	}
 	return router

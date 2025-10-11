@@ -18,8 +18,8 @@ type CreateSubscribeRequest struct {
 }
 
 func (h *Handler) CreateSubscription(c *gin.Context) {
-	// fmt.Println("hello")
 	var req CreateSubscribeRequest
+
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -64,5 +64,25 @@ func (h *Handler) CreateSubscription(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{
 		"id":      subscriptionID,
 		"message": "Subscription created successfully",
+	})
+}
+
+func (h *Handler) GetAllSubscriptionsByServiceName(c *gin.Context) {
+	serviceName := c.Param("serviceName")
+	if serviceName == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "service_name parameter is required"})
+		return
+	}
+
+	subscriptionList, err := h.service.Subscribe.GetAllByServiceName(serviceName)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get subscriptions"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"service_name":  serviceName,
+		"subscriptions": subscriptionList,
+		"count":         len(subscriptionList),
 	})
 }
