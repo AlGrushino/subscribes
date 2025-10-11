@@ -32,6 +32,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			subscribes.POST("", h.CreateSubscription)
 			subscribes.GET("/service/:serviceName", h.GetAllSubscriptionsByServiceName)
 			subscribes.GET("/:serviceID", h.GetSubscriptionByID)
+			subscribes.GET("/user_subscriptions/:userID", h.GetUsersSubscriptions)
 		}
 	}
 	return router

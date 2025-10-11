@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/AlGrushino/subscribes/internal/repository/models"
+	"github.com/google/uuid"
 )
 
 type subscribeRepository struct {
@@ -106,4 +107,38 @@ func (s *subscribeRepository) GetSubscriptionByID(subscriptionID int) (*models.S
 		return &subscription, err
 	}
 	return &subscription, nil
+}
+
+func (s *subscribeRepository) GetUsersSubscriptions(userID uuid.UUID) ([]models.Subscribe, error) {
+	var subscriptionList []models.Subscribe
+
+	rows, err := s.db.Query(
+		"SELECT id, service_name, price, user_id, start_date, end_date FROM subscribes WHERE user_id = $1",
+		userID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var subscribe models.Subscribe
+		err := rows.Scan(
+			&subscribe.Id,
+			&subscribe.ServiceName,
+			&subscribe.Price,
+			&subscribe.UserUUID,
+			&subscribe.StartDate,
+			&subscribe.EndDate,
+		)
+		if err != nil {
+			return nil, err
+		}
+		subscriptionList = append(subscriptionList, subscribe)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return subscriptionList, nil
 }

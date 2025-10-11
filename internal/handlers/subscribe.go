@@ -8,6 +8,7 @@ import (
 	"github.com/AlGrushino/subscribes/internal/repository/models"
 	"github.com/AlGrushino/subscribes/internal/service"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type CreateSubscribeRequest struct {
@@ -97,7 +98,7 @@ func (h *Handler) GetSubscriptionByID(c *gin.Context) {
 	if serviceID == "" {
 		c.JSON(
 			http.StatusBadRequest,
-			gin.H{"error": "service_id parameter is required"})
+			gin.H{"error": "serviceID parameter is required"})
 		return
 	}
 
@@ -119,5 +120,36 @@ func (h *Handler) GetSubscriptionByID(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"subscription": *subscription,
+	})
+}
+
+func (h *Handler) GetUsersSubscriptions(c *gin.Context) {
+	userID := c.Param("userID")
+	if userID == "" {
+		c.JSON(
+			http.StatusBadRequest,
+			gin.H{"error": "userID parameter is required"})
+		return
+	}
+
+	userUUID, err := uuid.Parse(userID)
+	if err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			gin.H{"error": "failed to convert"})
+		return
+	}
+
+	subscriptions, err := h.service.GetUsersSubscriptions(userUUID)
+	if err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			gin.H{"error": "failed to get subscriptions"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"subscriptions": subscriptions,
+		"count":         len(subscriptions),
 	})
 }
