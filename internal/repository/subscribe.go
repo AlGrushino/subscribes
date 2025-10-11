@@ -25,7 +25,6 @@ func (s *subscribeRepository) Create(subscription *models.Subscribe) (int, error
 	if err != nil {
 		return 0, err
 	}
-
 	defer func() {
 		if err != nil {
 			tx.Rollback()
@@ -151,6 +150,38 @@ func (s *subscribeRepository) UpdateSubscription(subscriptionID, price int) (int
 	}
 
 	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return 0, err
+	}
+
+	return int(rowsAffected), nil
+}
+
+func (s *subscribeRepository) DeleteSubscription(subscriptionID int) (int, error) {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return 0, err
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		}
+	}()
+
+	res, err := tx.Exec("DELETE FROM subscribes WHERE id = $1", subscriptionID)
+	if err != nil {
+		return 0, err
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return 0, err
+	}
+	if rowsAffected == 0 {
+		return 0, fmt.Errorf("subscription with id %d not found", subscriptionID)
+	}
+
+	err = tx.Commit()
 	if err != nil {
 		return 0, err
 	}

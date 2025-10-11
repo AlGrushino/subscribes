@@ -195,6 +195,37 @@ func (h *Handler) UpdateSubscription(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"rowsAffected": rowsAffected})
+	c.JSON(
+		http.StatusOK,
+		gin.H{"rowsAffected": rowsAffected})
+}
+
+func (h *Handler) DeleteSubscription(c *gin.Context) {
+	subscriptionID := c.Param("subscriptionID")
+	if subscriptionID == "" {
+		c.JSON(
+			http.StatusBadRequest,
+			gin.H{"error": "subscriptionID parameter is required"})
+		return
+	}
+
+	subscriptionIDInt, err := strconv.Atoi(subscriptionID)
+	if err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			gin.H{"error": "failed to convert subscriptionID"})
+		return
+	}
+
+	rowsAffected, err := h.service.DeleteSubscription(subscriptionIDInt)
+	if err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			gin.H{"error": "faied to delete subscription"})
+		return
+	}
+
+	c.JSON(
+		http.StatusOK,
+		gin.H{"rowsAffected": rowsAffected})
 }

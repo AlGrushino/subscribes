@@ -34,6 +34,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			subscribes.GET("/:serviceID", h.GetSubscriptionByID)
 			subscribes.GET("/user_subscriptions/:userID", h.GetUsersSubscriptions)
 			subscribes.PUT("/update_subscription/:subscriptionID/:price", h.UpdateSubscription)
+			subscribes.DELETE("/delete_subscription/:subscriptionID", h.DeleteSubscription)
 		}
 	}
 	return router

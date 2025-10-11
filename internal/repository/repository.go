@@ -13,6 +13,7 @@ type Subscribe interface {
 	GetSubscriptionByID(subscriptionID int) (*models.Subscribe, error)
 	GetUsersSubscriptions(userID uuid.UUID) ([]models.Subscribe, error)
 	UpdateSubscription(subscriptionID, price int) (int, error)
+	DeleteSubscription(subscriptionID int) (int, error)
 }
 
 type Repository struct {
