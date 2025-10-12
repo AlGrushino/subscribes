@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/AlGrushino/subscribes/internal/repository/models"
 	"github.com/google/uuid"
@@ -187,4 +188,39 @@ func (s *subscribeRepository) DeleteSubscription(subscriptionID int) (int, error
 	}
 
 	return int(rowsAffected), nil
+}
+
+func (s *subscribeRepository) GetSubscriptionsPriceSum(startDate, endDate time.Time) ([]models.SubscriptionSummary, error) {
+	query := `
+	SELECT
+		SUM(price),
+		user_id,
+		service_name
+	FROM subscribes
+	WHERE start_date <= $1 AND end_date >= $2
+	GROUP BY
+		user_id,
+		service_name;
+	`
+	rows, err := s.db.Query(query, endDate, startDate)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var results []models.SubscriptionSummary
+	for rows.Next() {
+		var summary models.SubscriptionSummary
+		err := rows.Scan(
+			&summary.TotalPrice,
+			&summary.UserID,
+			&summary.ServiceName,
+		)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, summary)
+	}
+
+	return results, nil
 }

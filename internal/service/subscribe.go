@@ -1,6 +1,8 @@
 package service
 
 import (
+	"time"
+
 	"github.com/AlGrushino/subscribes/internal/repository"
 	"github.com/AlGrushino/subscribes/internal/repository/models"
 	"github.com/google/uuid"
@@ -38,4 +40,9 @@ func (s *subscribeService) UpdateSubscription(subscriptionID, price int) (int, e
 
 func (s *subscribeService) DeleteSubscription(subscriptionID int) (int, error) {
 	return s.repository.DeleteSubscription(subscriptionID)
+}
+
+// GetSubscriptionsPriceSum(startDate, endDate time.Time) ([]SubscriptionSummary, error)
+func (s *subscribeService) GetSubscriptionsPriceSum(startDate, endDate time.Time) ([]models.SubscriptionSummary, error) {
+	return s.repository.GetSubscriptionsPriceSum(startDate, endDate)
 }

@@ -229,3 +229,59 @@ func (h *Handler) DeleteSubscription(c *gin.Context) {
 		http.StatusOK,
 		gin.H{"rowsAffected": rowsAffected})
 }
+
+func (h *Handler) GetSubscriptionsPriceSum(c *gin.Context) {
+	startDate := c.Param("startDate")
+	if startDate == "" {
+		c.JSON(
+			http.StatusBadRequest,
+			gin.H{"error": "startDate parameter is required"},
+		)
+		return
+	}
+
+	endDate := c.Param("endDate")
+	if endDate == "" {
+		c.JSON(
+			http.StatusBadRequest,
+			gin.H{"error": "endDate parameter is required"},
+		)
+		return
+	}
+
+	layOut := "01-2006"
+	parsedStartDate, err := time.Parse(layOut, startDate)
+	if err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			gin.H{"error": "failed to convert startDate"},
+		)
+		return
+	}
+
+	parsedEndDate, err := time.Parse(layOut, endDate)
+	if err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			gin.H{"error": "failed to convert endDate"},
+		)
+		return
+	}
+
+	subscriptionList, err := h.service.GetSubscriptionsPriceSum(parsedStartDate, parsedEndDate)
+	if err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			gin.H{"error": "failed to find records"},
+		)
+		return
+	}
+
+	c.JSON(
+		http.StatusOK,
+		gin.H{
+			"subscriptionList": subscriptionList,
+			"count":            len(subscriptionList),
+		},
+	)
+}

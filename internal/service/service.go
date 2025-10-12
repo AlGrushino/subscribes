@@ -1,6 +1,8 @@
 package service
 
 import (
+	"time"
+
 	"github.com/AlGrushino/subscribes/internal/repository"
 	"github.com/AlGrushino/subscribes/internal/repository/models"
 	"github.com/google/uuid"
@@ -13,6 +15,7 @@ type Subscribe interface {
 	GetUsersSubscriptions(userID uuid.UUID) ([]models.Subscribe, error)
 	UpdateSubscription(subscriptionID, price int) (int, error)
 	DeleteSubscription(subscriptionID int) (int, error)
+	GetSubscriptionsPriceSum(startDate, endDate time.Time) ([]models.SubscriptionSummary, error)
 }
 
 type Service struct {

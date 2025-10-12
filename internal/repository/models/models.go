@@ -21,3 +21,9 @@ type Subscribe struct {
 	StartDate   time.Time  `db:"start_date"`
 	EndDate     *time.Time `db:"end_date"`
 }
+
+type SubscriptionSummary struct {
+	TotalPrice  int    `json:"total_price" db:"sum"`
+	UserID      string `json:"user_id" db:"user_id"`
+	ServiceName string `json:"service_name" db:"service_name"`
+}
