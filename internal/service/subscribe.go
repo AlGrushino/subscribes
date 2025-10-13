@@ -5,6 +5,7 @@ import (
 
 	"github.com/AlGrushino/subscribes/internal/repository"
 	"github.com/AlGrushino/subscribes/internal/repository/models"
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
@@ -18,8 +19,43 @@ func newSubscribeService(repository repository.Subscribe) *subscribeService {
 	}
 }
 
-func (s *subscribeService) Create(subscription *models.Subscribe) (int, error) {
-	return s.repository.Create(subscription)
+type CreateSubscribeRequest struct {
+	ServiceName string  `json:"service_name" binding:"required"`
+	Price       int     `json:"price" binding:"required"`
+	UserID      string  `json:"user_id" binding:"required"`
+	StartDate   string  `json:"start_date" binding:"required"`
+	EndDate     *string `json:"end_date,omitempty"`
+}
+
+func (s *subscribeService) Create(c *gin.Context, subscription *models.Subscribe) (int, error) {
+	var req CreateSubscribeRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		return 0, err
+	}
+
+	if err := handleDates(subscription, req.StartDate, *req.EndDate); err != nil {
+		return 0, err
+	}
+
+	if err := handlePrice(subscription, req.Price); err != nil {
+		return 0, err
+	}
+
+	if err := handleServiceName(subscription, req.ServiceName); err != nil {
+		return 0, err
+	}
+
+	if err := handleUserID(subscription, req.UserID); err != nil {
+		return 0, err
+	}
+
+	id, err := s.repository.Create(subscription)
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
 }
 
 func (s *subscribeService) GetAllByServiceName(serviceName string) ([]models.Subscribe, error) {

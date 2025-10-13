@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/AlGrushino/subscribes/internal/repository/models"
-	"github.com/AlGrushino/subscribes/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -20,46 +19,16 @@ type CreateSubscribeRequest struct {
 }
 
 func (h *Handler) CreateSubscription(c *gin.Context) {
-	var req CreateSubscribeRequest
-
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	startDate, err := time.Parse("01-2006", req.StartDate)
+	subscribe := &models.Subscribe{}
+	subscriptionID, err := h.service.Create(c, subscribe)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid start_date format"})
-		return
-	}
-
-	var endDate *time.Time
-	if req.EndDate != nil && *req.EndDate != "" {
-		parsedEndDate, err := time.Parse("01-2006", *req.EndDate)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid end_date format"})
-			return
-		}
-		endDate = &parsedEndDate
-	}
-
-	parsedUserID, err := service.ParseUUID(req.UserID)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user_id format"})
-		return
-	}
-
-	subscribe := &models.Subscribe{
-		ServiceName: req.ServiceName,
-		Price:       req.Price,
-		UserUUID:    parsedUserID,
-		StartDate:   startDate,
-		EndDate:     endDate,
-	}
-
-	subscriptionID, err := h.service.Subscribe.Create(subscribe)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Did not work to add subscription"})
+		c.JSON(
+			http.StatusInternalServerError,
+			gin.H{
+				// придумать, как лучше обработать эту ошибку
+				"error": err.Error(),
+			},
+		)
 		return
 	}
 
