@@ -10,14 +10,6 @@ import (
 	"github.com/google/uuid"
 )
 
-type CreateSubscribeRequest struct {
-	ServiceName string  `json:"service_name" binding:"required"`
-	Price       int     `json:"price" binding:"required"`
-	UserID      string  `json:"user_id" binding:"required"`
-	StartDate   string  `json:"start_date" binding:"required"`
-	EndDate     *string `json:"end_date,omitempty"`
-}
-
 func (h *Handler) CreateSubscription(c *gin.Context) {
 	subscribe := &models.Subscribe{}
 	subscriptionID, err := h.service.Create(c, subscribe)
@@ -25,7 +17,6 @@ func (h *Handler) CreateSubscription(c *gin.Context) {
 		c.JSON(
 			http.StatusInternalServerError,
 			gin.H{
-				// придумать, как лучше обработать эту ошибку
 				"error": err.Error(),
 			},
 		)
@@ -43,23 +34,27 @@ func (h *Handler) GetAllSubscriptionsByServiceName(c *gin.Context) {
 	if serviceName == "" {
 		c.JSON(
 			http.StatusBadRequest,
-			gin.H{"error": "service_name parameter is required"})
+			gin.H{"error": "serviceName parameter is required"},
+		)
 		return
 	}
 
-	subscriptionList, err := h.service.Subscribe.GetAllByServiceName(serviceName)
+	list, err := h.service.GetAllByServiceName(serviceName)
 	if err != nil {
 		c.JSON(
 			http.StatusInternalServerError,
-			gin.H{"error": "Failed to get subscriptions"})
+			gin.H{"error": "Failed to get subscriptions"},
+		)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"service_name":  serviceName,
-		"subscriptions": subscriptionList,
-		"count":         len(subscriptionList),
-	})
+	c.JSON(
+		http.StatusOK,
+		gin.H{
+			"subscriptionsList": list,
+			"count":             len(list),
+		},
+	)
 }
 
 func (h *Handler) GetSubscriptionByID(c *gin.Context) {
