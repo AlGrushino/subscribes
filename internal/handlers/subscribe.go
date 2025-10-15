@@ -11,6 +11,15 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// CreateSubscription creates a new subscription
+// @Summary Create subscription
+// @Description Creates a new subscription in the system
+// @Tags subscriptions
+// @Accept json
+// @Produce json
+// @Success 201 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /subscriptions [post]
 func (h *Handler) CreateSubscription(c *gin.Context) {
 	h.log.WithFields(logrus.Fields{
 		"layer":  "handler",
@@ -37,6 +46,17 @@ func (h *Handler) CreateSubscription(c *gin.Context) {
 	})
 }
 
+// GetAllSubscriptionsByServiceName retrieves all subscriptions by service name
+// @Summary Get subscriptions by service name
+// @Description Returns all subscriptions for the specified service
+// @Tags subscriptions
+// @Accept json
+// @Produce json
+// @Param serviceName path string true "Service name"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /subscriptions/service/{serviceName} [get]
 func (h *Handler) GetAllSubscriptionsByServiceName(c *gin.Context) {
 	h.log.WithFields(logrus.Fields{
 		"layer":  "handler",
@@ -74,6 +94,17 @@ func (h *Handler) GetAllSubscriptionsByServiceName(c *gin.Context) {
 	)
 }
 
+// GetSubscriptionByID retrieves subscription by ID
+// @Summary Get subscription by ID
+// @Description Returns subscription information by specified ID
+// @Tags subscriptions
+// @Accept json
+// @Produce json
+// @Param serviceID path string true "Service ID"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /subscriptions/{serviceID} [get]
 func (h *Handler) GetSubscriptionByID(c *gin.Context) {
 	h.log.WithFields(logrus.Fields{
 		"layer":  "handler",
@@ -115,6 +146,17 @@ func (h *Handler) GetSubscriptionByID(c *gin.Context) {
 	})
 }
 
+// GetUsersSubscriptions retrieves all user subscriptions
+// @Summary Get user subscriptions
+// @Description Returns all subscriptions for the specified user
+// @Tags subscriptions
+// @Accept json
+// @Produce json
+// @Param userID path string true "User UUID"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /subscriptions/user/{userID} [get]
 func (h *Handler) GetUsersSubscriptions(c *gin.Context) {
 	h.log.WithFields(logrus.Fields{
 		"layer":  "handler",
@@ -157,6 +199,18 @@ func (h *Handler) GetUsersSubscriptions(c *gin.Context) {
 	})
 }
 
+// UpdateSubscription updates subscription information
+// @Summary Update subscription
+// @Description Updates subscription price by specified ID
+// @Tags subscriptions
+// @Accept json
+// @Produce json
+// @Param subscriptionID path string true "Subscription ID"
+// @Param price path string true "New subscription price"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /subscriptions/{subscriptionID}/{price} [put]
 func (h *Handler) UpdateSubscription(c *gin.Context) {
 	h.log.WithFields(logrus.Fields{
 		"layer":  "handler",
@@ -218,6 +272,17 @@ func (h *Handler) UpdateSubscription(c *gin.Context) {
 		gin.H{"rowsAffected": rowsAffected})
 }
 
+// DeleteSubscription deletes a subscription
+// @Summary Delete subscription
+// @Description Deletes subscription by specified ID
+// @Tags subscriptions
+// @Accept json
+// @Produce json
+// @Param subscriptionID path string true "Subscription ID"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /subscriptions/{subscriptionID} [delete]
 func (h *Handler) DeleteSubscription(c *gin.Context) {
 	h.log.WithFields(logrus.Fields{
 		"layer":  "handler",
@@ -259,6 +324,18 @@ func (h *Handler) DeleteSubscription(c *gin.Context) {
 		gin.H{"rowsAffected": rowsAffected})
 }
 
+// GetSubscriptionsPriceSum retrieves subscriptions and price sum for specified period
+// @Summary Get subscriptions price sum
+// @Description Returns subscriptions list and their price sum for specified time period
+// @Tags subscriptions
+// @Accept json
+// @Produce json
+// @Param startDate path string true "Start date (format: MM-YYYY)"
+// @Param endDate path string true "End date (format: MM-YYYY)"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /subscriptions/sum/{startDate}/{endDate} [get]
 func (h *Handler) GetSubscriptionsPriceSum(c *gin.Context) {
 	h.log.WithFields(logrus.Fields{
 		"layer":  "handler",

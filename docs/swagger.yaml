@@ -1,0 +1,228 @@
+info:
+  contact: {}
+paths:
+  /subscriptions:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new subscription in the system
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create subscription
+      tags:
+      - subscriptions
+  /subscriptions/{serviceID}:
+    get:
+      consumes:
+      - application/json
+      description: Returns subscription information by specified ID
+      parameters:
+      - description: Service ID
+        in: path
+        name: serviceID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get subscription by ID
+      tags:
+      - subscriptions
+  /subscriptions/{subscriptionID}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes subscription by specified ID
+      parameters:
+      - description: Subscription ID
+        in: path
+        name: subscriptionID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete subscription
+      tags:
+      - subscriptions
+  /subscriptions/{subscriptionID}/{price}:
+    put:
+      consumes:
+      - application/json
+      description: Updates subscription price by specified ID
+      parameters:
+      - description: Subscription ID
+        in: path
+        name: subscriptionID
+        required: true
+        type: string
+      - description: New subscription price
+        in: path
+        name: price
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update subscription
+      tags:
+      - subscriptions
+  /subscriptions/service/{serviceName}:
+    get:
+      consumes:
+      - application/json
+      description: Returns all subscriptions for the specified service
+      parameters:
+      - description: Service name
+        in: path
+        name: serviceName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get subscriptions by service name
+      tags:
+      - subscriptions
+  /subscriptions/sum/{startDate}/{endDate}:
+    get:
+      consumes:
+      - application/json
+      description: Returns subscriptions list and their price sum for specified time
+        period
+      parameters:
+      - description: 'Start date (format: MM-YYYY)'
+        in: path
+        name: startDate
+        required: true
+        type: string
+      - description: 'End date (format: MM-YYYY)'
+        in: path
+        name: endDate
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get subscriptions price sum
+      tags:
+      - subscriptions
+  /subscriptions/user/{userID}:
+    get:
+      consumes:
+      - application/json
+      description: Returns all subscriptions for the specified user
+      parameters:
+      - description: User UUID
+        in: path
+        name: userID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get user subscriptions
+      tags:
+      - subscriptions
+swagger: "2.0"

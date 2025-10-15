@@ -22,12 +22,13 @@ func newSubscribeService(repository repository.Subscribe, log *logrus.Logger) *s
 	}
 }
 
+// CreateSubscribeRequest
 type CreateSubscribeRequest struct {
-	ServiceName string  `json:"service_name" binding:"required"`
-	Price       int     `json:"price" binding:"required"`
-	UserID      string  `json:"user_id" binding:"required"`
-	StartDate   string  `json:"start_date" binding:"required"`
-	EndDate     *string `json:"end_date,omitempty"`
+	ServiceName string  `json:"service_name" binding:"required" exmaple:"Netflix"`
+	Price       int     `json:"price" binding:"required" exmaple:"322"`
+	UserID      string  `json:"user_id" binding:"required" example:"f47ac10b-58cc-4372-a567-0e02b2c3d479"`
+	StartDate   string  `json:"start_date" binding:"required" example:"03-2024"`
+	EndDate     *string `json:"end_date,omitempty" example:"05-2024"`
 }
 
 func (s *subscribeService) Create(c *gin.Context, subscription *models.Subscribe) (int, error) {

@@ -4,6 +4,11 @@ import (
 	"github.com/AlGrushino/subscribes/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+
+	_ "github.com/AlGrushino/subscribes/docs"
 )
 
 type Handler struct {
@@ -30,6 +35,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	}).Info("Initing routes")
 
 	router := gin.Default()
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	api := router.Group("/api")
 	{
