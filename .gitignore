@@ -39,3 +39,4 @@ bases.sql
 temp.json
 layers.txt
 request_examples.txt
+logs/app.log

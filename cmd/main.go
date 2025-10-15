@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -15,24 +13,36 @@ import (
 	"github.com/AlGrushino/subscribes/internal/service"
 	"github.com/AlGrushino/subscribes/pkg/db"
 	"github.com/joho/godotenv"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
-	err := godotenv.Load("../.env")
+	log := logrus.New()
+	log.SetFormatter(&logrus.JSONFormatter{})
+
+	logFile, err := os.OpenFile("../logs/app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
+	}
+	defer logFile.Close()
+
+	log.SetOutput(logFile)
+
+	err = godotenv.Load("../.env")
+	if err != nil {
+		log.Fatal(err)
 		return
 	}
 
-	cfg, err := db.GetConfig()
+	cfg, err := db.GetConfig(log)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 		return
 	}
 
-	database, err := db.DBInit(cfg)
+	database, err := db.DBInit(log, cfg)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 		return
 	}
 	defer database.Close()
@@ -42,32 +52,29 @@ func main() {
 	handler := handlers.NewHandler(serv)
 	router := handler.InitRoutes()
 
-	fmt.Println("Starting server on :8080...")
+	// fmt.Println("Starting server on :8080...")
+	log.Info("Server started")
 
-	// Создаем свой http.Server для graceful shutdown
 	server := &http.Server{
 		Addr:    ":8080",
 		Handler: router,
 	}
 
-	// Запускаем сервер в горутине
 	go func() {
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Server failed to start: %v", err)
 		}
 	}()
 
-	fmt.Println("Server is running on http://localhost:8080")
-	fmt.Println("Use Ctrl+C to stop the server")
+	// fmt.Println("Server is running on http://localhost:8080")
+	// fmt.Println("Use Ctrl+C to stop the server")
 
-	// Ожидаем сигнал завершения
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
 	log.Println("Shutting down server...")
 
-	// Graceful shutdown
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

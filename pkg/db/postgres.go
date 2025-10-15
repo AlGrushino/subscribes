@@ -3,9 +3,11 @@ package db
 import (
 	"database/sql"
 	"fmt"
+
 	"os"
 
 	_ "github.com/lib/pq"
+	"github.com/sirupsen/logrus"
 )
 
 type Config struct {
@@ -16,7 +18,9 @@ type Config struct {
 	Port     string
 }
 
-func GetConfig() (*Config, error) {
+func GetConfig(log *logrus.Logger) (*Config, error) {
+	log.Println("Getting config from env")
+
 	cfg := Config{
 		User:     os.Getenv("DB_USER"),
 		Password: os.Getenv("DB_PASSWORD"),
@@ -27,17 +31,20 @@ func GetConfig() (*Config, error) {
 	return &cfg, nil
 }
 
-func DBInit(cfg *Config) (db *sql.DB, err error) {
-	connStr := GetConnStr(cfg)
+func DBInit(log *logrus.Logger, cfg *Config) (db *sql.DB, err error) {
+	connStr := GetConnStr(log, cfg)
 
 	db, err = sql.Open("postgres", connStr)
 	if err != nil {
+		log.Fatalf("Failed to init db, error: %v", err)
 		return nil, err
 	}
 	return db, nil
 }
 
-func GetConnStr(cfg *Config) string {
+func GetConnStr(log *logrus.Logger, cfg *Config) string {
+	log.Info("Getting connStr")
+
 	connStr := fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s",
 		cfg.User,

@@ -78,7 +78,6 @@ func (s *subscribeService) DeleteSubscription(subscriptionID int) (int, error) {
 	return s.repository.DeleteSubscription(subscriptionID)
 }
 
-// GetSubscriptionsPriceSum(startDate, endDate time.Time) ([]SubscriptionSummary, error)
 func (s *subscribeService) GetSubscriptionsPriceSum(startDate, endDate time.Time) ([]models.SubscriptionSummary, error) {
 	return s.repository.GetSubscriptionsPriceSum(startDate, endDate)
 }
