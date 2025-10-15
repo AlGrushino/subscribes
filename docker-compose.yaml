@@ -1,0 +1,33 @@
+version: '3.7'
+services:
+  db:
+    image: postgres:15
+    container_name: subscribe_project
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: subscribe_project
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  
+  subscribe:
+    build:
+      context: .
+    container_name: subscribe
+    env_file:
+      - .env
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: subscribe_project
+    depends_on:
+      - db
+    ports:
+      - 7777:8000
+
+volumes:
+  postgres_data:
