@@ -12,6 +12,11 @@ type Handler struct {
 }
 
 func NewHandler(service *service.Service, log *logrus.Logger) *Handler {
+	log.WithFields(logrus.Fields{
+		"layer":  "handler",
+		"method": "NewHandler",
+	}).Info("Create new handler")
+
 	return &Handler{
 		service: service,
 		log:     log,
@@ -19,14 +24,12 @@ func NewHandler(service *service.Service, log *logrus.Logger) *Handler {
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {
-	router := gin.Default()
+	h.log.WithFields(logrus.Fields{
+		"layer":  "handler",
+		"method": "InitRoutes",
+	}).Info("Initing routes")
 
-	// отладка
-	// router.Use(func(c *gin.Context) {
-	// 	fmt.Printf("Incoming request: %s %s\n", c.Request.Method, c.Request.URL.Path)
-	// 	c.Next()
-	// })
-	// отладка
+	router := gin.Default()
 
 	api := router.Group("/api")
 	{

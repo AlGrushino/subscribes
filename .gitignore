@@ -40,3 +40,4 @@ temp.json
 layers.txt
 request_examples.txt
 logs/app.log
+internal/handlers/users.go

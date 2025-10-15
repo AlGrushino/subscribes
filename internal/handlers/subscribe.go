@@ -8,12 +8,20 @@ import (
 	"github.com/AlGrushino/subscribes/internal/repository/models"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 )
 
 func (h *Handler) CreateSubscription(c *gin.Context) {
+	h.log.WithFields(logrus.Fields{
+		"layer":  "handler",
+		"method": "CreateSubscription",
+	}).Info("Creating subscription")
+
 	subscribe := &models.Subscribe{}
 	subscriptionID, err := h.service.Create(c, subscribe)
 	if err != nil {
+		h.log.Fatal("Failed to create subscription")
+
 		c.JSON(
 			http.StatusInternalServerError,
 			gin.H{
@@ -30,8 +38,15 @@ func (h *Handler) CreateSubscription(c *gin.Context) {
 }
 
 func (h *Handler) GetAllSubscriptionsByServiceName(c *gin.Context) {
+	h.log.WithFields(logrus.Fields{
+		"layer":  "handler",
+		"method": "GetAllSubscriptionsByServiceName",
+	}).Info("Getting all subs")
+
 	serviceName := c.Param("serviceName")
 	if serviceName == "" {
+		h.log.Fatalf("service name is empty")
+
 		c.JSON(
 			http.StatusBadRequest,
 			gin.H{"error": "serviceName parameter is required"},
@@ -41,6 +56,8 @@ func (h *Handler) GetAllSubscriptionsByServiceName(c *gin.Context) {
 
 	list, err := h.service.GetAllByServiceName(serviceName)
 	if err != nil {
+		h.log.Fatalf("Failed to call h.service.GetAllByServiceName(serviceName), error: %v", err)
+
 		c.JSON(
 			http.StatusInternalServerError,
 			gin.H{"error": "Failed to get subscriptions"},
@@ -58,8 +75,15 @@ func (h *Handler) GetAllSubscriptionsByServiceName(c *gin.Context) {
 }
 
 func (h *Handler) GetSubscriptionByID(c *gin.Context) {
+	h.log.WithFields(logrus.Fields{
+		"layer":  "handler",
+		"method": "GetSubscriptionByID",
+	}).Info("Getting subscription by ID")
+
 	serviceID := c.Param("serviceID")
 	if serviceID == "" {
+		h.log.Fatal("serviceID param is empty")
+
 		c.JSON(
 			http.StatusBadRequest,
 			gin.H{"error": "serviceID parameter is required"})
@@ -68,6 +92,8 @@ func (h *Handler) GetSubscriptionByID(c *gin.Context) {
 
 	serviceIDInt, err := strconv.Atoi(serviceID)
 	if err != nil {
+		h.log.Fatalf("Failed to Atoi, error: %v", err)
+
 		c.JSON(
 			http.StatusInternalServerError,
 			gin.H{"error": "failed to convert"})
@@ -76,6 +102,8 @@ func (h *Handler) GetSubscriptionByID(c *gin.Context) {
 
 	subscription, err := h.service.Subscribe.GetSubscriptionByID(serviceIDInt)
 	if err != nil {
+		h.log.Fatalf("Failed to Atoi, error: %v", err)
+
 		c.JSON(
 			http.StatusInternalServerError,
 			gin.H{"error": "failed to get subscription"})
@@ -88,8 +116,15 @@ func (h *Handler) GetSubscriptionByID(c *gin.Context) {
 }
 
 func (h *Handler) GetUsersSubscriptions(c *gin.Context) {
+	h.log.WithFields(logrus.Fields{
+		"layer":  "handler",
+		"method": "GetUsersSubscriptions",
+	}).Info("Getting users subscriptions")
+
 	userID := c.Param("userID")
 	if userID == "" {
+		h.log.Fatal("userID param is empty")
+
 		c.JSON(
 			http.StatusBadRequest,
 			gin.H{"error": "userID parameter is required"})
@@ -98,6 +133,8 @@ func (h *Handler) GetUsersSubscriptions(c *gin.Context) {
 
 	userUUID, err := uuid.Parse(userID)
 	if err != nil {
+		h.log.Fatalf("Failed to parse userID, error: %v", err)
+
 		c.JSON(
 			http.StatusInternalServerError,
 			gin.H{"error": "failed to convert"})
@@ -106,6 +143,8 @@ func (h *Handler) GetUsersSubscriptions(c *gin.Context) {
 
 	subscriptions, err := h.service.GetUsersSubscriptions(userUUID)
 	if err != nil {
+		h.log.Fatalf("Failed to GetUsersSubscriptions(userUUID), error: %v", err)
+
 		c.JSON(
 			http.StatusInternalServerError,
 			gin.H{"error": "failed to get subscriptions"})
@@ -119,16 +158,25 @@ func (h *Handler) GetUsersSubscriptions(c *gin.Context) {
 }
 
 func (h *Handler) UpdateSubscription(c *gin.Context) {
+	h.log.WithFields(logrus.Fields{
+		"layer":  "handler",
+		"method": "UpdateSubscription",
+	}).Info("Updating subscription")
+
 	subscriptionID := c.Param("subscriptionID")
 	price := c.Param("price")
 
 	if subscriptionID == "" {
+		h.log.Fatal("subscriptionID param is empty")
+
 		c.JSON(
 			http.StatusBadRequest,
 			gin.H{"error": "subscriptionID parameter is required"})
 		return
 	}
 	if price == "" {
+		h.log.Fatal("price param is empty")
+
 		c.JSON(
 			http.StatusBadRequest,
 			gin.H{"error": "price parameter is required"})
@@ -137,6 +185,8 @@ func (h *Handler) UpdateSubscription(c *gin.Context) {
 
 	subscriptionIDInt, err := strconv.Atoi(subscriptionID)
 	if err != nil {
+		h.log.Fatalf("failed to atoi subscriptionIDInt, error: %v", err)
+
 		c.JSON(
 			http.StatusInternalServerError,
 			gin.H{"error": "failed to convert subscriptionID"})
@@ -145,6 +195,8 @@ func (h *Handler) UpdateSubscription(c *gin.Context) {
 
 	priceInt, err := strconv.Atoi(price)
 	if err != nil {
+		h.log.Fatalf("failed to atoi price, error: %v", err)
+
 		c.JSON(
 			http.StatusInternalServerError,
 			gin.H{"error": "failed to convert price"})
@@ -153,6 +205,8 @@ func (h *Handler) UpdateSubscription(c *gin.Context) {
 
 	rowsAffected, err := h.service.UpdateSubscription(subscriptionIDInt, priceInt)
 	if err != nil {
+		h.log.Fatalf("failed to UpdateSubscription(subscriptionIDInt, priceInt), error: %v", err)
+
 		c.JSON(
 			http.StatusInternalServerError,
 			gin.H{"error": "failed to udpate subscription"})
@@ -165,8 +219,15 @@ func (h *Handler) UpdateSubscription(c *gin.Context) {
 }
 
 func (h *Handler) DeleteSubscription(c *gin.Context) {
+	h.log.WithFields(logrus.Fields{
+		"layer":  "handler",
+		"method": "DeleteSubscription",
+	}).Info("Delete subscription")
+
 	subscriptionID := c.Param("subscriptionID")
 	if subscriptionID == "" {
+		h.log.Fatalf("subscriptionID param is empty")
+
 		c.JSON(
 			http.StatusBadRequest,
 			gin.H{"error": "subscriptionID parameter is required"})
@@ -175,6 +236,8 @@ func (h *Handler) DeleteSubscription(c *gin.Context) {
 
 	subscriptionIDInt, err := strconv.Atoi(subscriptionID)
 	if err != nil {
+		h.log.Fatalf("failed to atoi, error: %v", err)
+
 		c.JSON(
 			http.StatusInternalServerError,
 			gin.H{"error": "failed to convert subscriptionID"})
@@ -183,6 +246,8 @@ func (h *Handler) DeleteSubscription(c *gin.Context) {
 
 	rowsAffected, err := h.service.DeleteSubscription(subscriptionIDInt)
 	if err != nil {
+		h.log.Fatalf("failed to DeleteSubscription(subscriptionIDInt), error: %v", err)
+
 		c.JSON(
 			http.StatusInternalServerError,
 			gin.H{"error": "faied to delete subscription"})
@@ -195,8 +260,15 @@ func (h *Handler) DeleteSubscription(c *gin.Context) {
 }
 
 func (h *Handler) GetSubscriptionsPriceSum(c *gin.Context) {
+	h.log.WithFields(logrus.Fields{
+		"layer":  "handler",
+		"method": "GetSubscriptionsPriceSum",
+	}).Info("Getting subscription price and sum")
+
 	startDate := c.Param("startDate")
 	if startDate == "" {
+		h.log.Fatalf("startDate param is empty")
+
 		c.JSON(
 			http.StatusBadRequest,
 			gin.H{"error": "startDate parameter is required"},
@@ -206,6 +278,8 @@ func (h *Handler) GetSubscriptionsPriceSum(c *gin.Context) {
 
 	endDate := c.Param("endDate")
 	if endDate == "" {
+		h.log.Fatalf("endDate param is empty")
+
 		c.JSON(
 			http.StatusBadRequest,
 			gin.H{"error": "endDate parameter is required"},
@@ -216,6 +290,8 @@ func (h *Handler) GetSubscriptionsPriceSum(c *gin.Context) {
 	layOut := "01-2006"
 	parsedStartDate, err := time.Parse(layOut, startDate)
 	if err != nil {
+		h.log.Fatalf("failed to parse startDate, error: %v", err)
+
 		c.JSON(
 			http.StatusInternalServerError,
 			gin.H{"error": "failed to convert startDate"},
@@ -225,6 +301,8 @@ func (h *Handler) GetSubscriptionsPriceSum(c *gin.Context) {
 
 	parsedEndDate, err := time.Parse(layOut, endDate)
 	if err != nil {
+		h.log.Fatalf("failed to parse endDate, error: %v", err)
+
 		c.JSON(
 			http.StatusInternalServerError,
 			gin.H{"error": "failed to convert endDate"},
@@ -234,6 +312,8 @@ func (h *Handler) GetSubscriptionsPriceSum(c *gin.Context) {
 
 	subscriptionList, err := h.service.GetSubscriptionsPriceSum(parsedStartDate, parsedEndDate)
 	if err != nil {
+		h.log.Fatalf("failed to GetSubscriptionsPriceSum(parsedStartDate, parsedEndDate), error: %v", err)
+
 		c.JSON(
 			http.StatusInternalServerError,
 			gin.H{"error": "failed to find records"},
