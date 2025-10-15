@@ -3,15 +3,18 @@ package handlers
 import (
 	"github.com/AlGrushino/subscribes/internal/service"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 type Handler struct {
 	service *service.Service
+	log     *logrus.Logger
 }
 
-func NewHandler(service *service.Service) *Handler {
+func NewHandler(service *service.Service, log *logrus.Logger) *Handler {
 	return &Handler{
 		service: service,
+		log:     log,
 	}
 }
 

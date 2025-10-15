@@ -11,7 +11,6 @@ import (
 )
 
 func (h *Handler) CreateSubscription(c *gin.Context) {
-
 	subscribe := &models.Subscribe{}
 	subscriptionID, err := h.service.Create(c, subscribe)
 	if err != nil {

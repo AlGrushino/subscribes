@@ -7,6 +7,7 @@ import (
 	"github.com/AlGrushino/subscribes/internal/repository/models"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 )
 
 type Subscribe interface {
@@ -21,10 +22,12 @@ type Subscribe interface {
 
 type Service struct {
 	Subscribe
+	log *logrus.Logger
 }
 
-func NewService(repository *repository.Repository) *Service {
+func NewService(repository *repository.Repository, log *logrus.Logger) *Service {
 	return &Service{
-		Subscribe: newSubscribeService(repository.Subscribe),
+		Subscribe: newSubscribeService(repository.Subscribe, log),
+		log:       log,
 	}
 }

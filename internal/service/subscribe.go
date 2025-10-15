@@ -7,15 +7,18 @@ import (
 	"github.com/AlGrushino/subscribes/internal/repository/models"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 )
 
 type subscribeService struct {
 	repository repository.Subscribe
+	log        *logrus.Logger
 }
 
-func newSubscribeService(repository repository.Subscribe) *subscribeService {
+func newSubscribeService(repository repository.Subscribe, log *logrus.Logger) *subscribeService {
 	return &subscribeService{
 		repository: repository,
+		log:        log,
 	}
 }
 

@@ -47,12 +47,11 @@ func main() {
 	}
 	defer database.Close()
 
-	repo := repository.NewRepository(database)
-	serv := service.NewService(repo)
-	handler := handlers.NewHandler(serv)
+	repo := repository.NewRepository(database, log)
+	serv := service.NewService(repo, log)
+	handler := handlers.NewHandler(serv, log)
 	router := handler.InitRoutes()
 
-	// fmt.Println("Starting server on :8080...")
 	log.Info("Server started")
 
 	server := &http.Server{
@@ -65,9 +64,6 @@ func main() {
 			log.Fatalf("Server failed to start: %v", err)
 		}
 	}()
-
-	// fmt.Println("Server is running on http://localhost:8080")
-	// fmt.Println("Use Ctrl+C to stop the server")
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
